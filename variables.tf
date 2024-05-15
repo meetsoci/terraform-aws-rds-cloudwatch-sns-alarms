@@ -35,12 +35,20 @@ variable "freeable_memory_threshold" {
   # 64 Megabyte in Byte
 }
 
-variable "free_storage_space_threshold" {
+variable "free_local_storage_space_threshold" {
   description = "The minimum amount of available storage space in Byte."
   type        = number
-  default     = 2000000000
+  default     = 100000000000
 
-  # 2 Gigabyte in Byte
+  # 100 Gigabyte in Byte
+}
+
+variable "aurora_volume_bytes_left_total_threshold" {
+  description = "The minimum amount of available storage space in Byte."
+  type        = number
+  default     = 2000000000000
+
+  # 2000 Gigabyte in Byte
 }
 
 variable "swap_usage_threshold" {

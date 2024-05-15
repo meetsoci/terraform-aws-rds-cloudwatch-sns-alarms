@@ -5,7 +5,8 @@ locals {
     CPUCreditBalanceThreshold = max(var.cpu_credit_balance_threshold, 0)
     DiskQueueDepthThreshold   = max(var.disk_queue_depth_threshold, 0)
     FreeableMemoryThreshold   = max(var.freeable_memory_threshold, 0)
-    FreeStorageSpaceThreshold = max(var.free_storage_space_threshold, 0)
+    FreeLocalStorageSpaceThreshold = max(var.free_local_storage_space_threshold, 0)
+    AuroraVolumeBytesLeftTotalThreshold = max(var.aurora_volume_bytes_left_total_threshold, 0)
     SwapUsageThreshold        = max(var.swap_usage_threshold, 0)
   }
 
@@ -15,7 +16,8 @@ locals {
     "cpu_credit_balance_too_low",
     "disk_queue_depth_too_high",
     "freeable_memory_too_low",
-    "free_storage_space_threshold",
+    "free_local_storage_space_threshold",
+    "aurora_volume_bytes_left_total",
     "swap_usage_too_high"
   ])
 }
@@ -121,15 +123,33 @@ resource "aws_cloudwatch_metric_alarm" "freeable_memory_too_low" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "free_storage_space_too_low" {
-  alarm_name          = module.label["free_storage_space_threshold"].id
+resource "aws_cloudwatch_metric_alarm" "free_local_storage_space_too_low" {
+  alarm_name          = module.label["free_local_storage_space_threshold"].id
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
-  metric_name         = "FreeStorageSpace"
+  metric_name         = "FreeLocalStorageSpace"
   namespace           = "AWS/RDS"
   period              = "600"
   statistic           = "Average"
-  threshold           = local.thresholds["FreeStorageSpaceThreshold"]
+  threshold           = local.thresholds["FreeLocalStorageSpaceThreshold"]
+  alarm_description   = "Average database local free storage space over last 10 minutes too low"
+  alarm_actions       = aws_sns_topic.default.*.arn
+  ok_actions          = aws_sns_topic.default.*.arn
+
+  dimensions = {
+    DBInstanceIdentifier = var.db_instance_id
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "aurora_volume_bytes_left_too_low" {
+  alarm_name          = module.label["free_local_storage_space_threshold"].id
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "AuroraVolumeBytesLeftTotal"
+  namespace           = "AWS/RDS"
+  period              = "600"
+  statistic           = "Average"
+  threshold           = local.thresholds["AuroraVolumeBytesLeftTotalThreshold"]
   alarm_description   = "Average database free storage space over last 10 minutes too low"
   alarm_actions       = aws_sns_topic.default.*.arn
   ok_actions          = aws_sns_topic.default.*.arn
