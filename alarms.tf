@@ -127,7 +127,7 @@ resource "aws_cloudwatch_metric_alarm" "free_local_storage_space_too_low" {
   alarm_name          = module.label["free_local_storage_space_threshold"].id
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
-  metric_name         = "FreeLocalStorageSpace"
+  metric_name         = "FreeLocalStorage"
   namespace           = "AWS/RDS"
   period              = "600"
   statistic           = "Average"
