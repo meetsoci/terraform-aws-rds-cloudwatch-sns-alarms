@@ -142,7 +142,7 @@ resource "aws_cloudwatch_metric_alarm" "free_local_storage_space_too_low" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "aurora_volume_bytes_left_too_low" {
-  alarm_name          = module.label["free_local_storage_space_threshold"].id
+  alarm_name          = module.label["aurora_volume_bytes_left_total"].id
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
   metric_name         = "AuroraVolumeBytesLeftTotal"
